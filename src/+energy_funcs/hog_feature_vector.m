@@ -1,4 +1,4 @@
-function [feature] = hog_feature_vector(im)
+function feature = hog_feature_vector(im)
 
 % The given code finds the HOG feature vector for any given image. HOG
 % feature vector/descriptor can then be used for detection of any
@@ -8,17 +8,6 @@ function [feature] = hog_feature_vector(im)
 
 % INPUT => im (input image)
 % OUTPUT => HOG feature vector for that particular image
-
-% Example: Running the code
- im = imread('cameraman.tif');
- im3 = imread('cameraman.tif');
-
-    %hog = hog_feature_vector (im);
-    im2 =imread('football.jpg');
-    imshow(im2);
-     imshow(im3);
-
-
 
 % Convert RGB iamge to grayscale
 if size(im,3)==3
@@ -46,8 +35,8 @@ angle=atand(Ix./Iy); % Matrix containing the angles of each edge gradient
 angle=imadd(angle,90); %Angles in range (0,180)
 magnitude=sqrt(Ix.^2 + Iy.^2);
 
- figure,imshow(uint8(angle));
- figure,imshow(uint8(magnitude));
+%  figure,imshow(uint8(angle));
+%  figure,imshow(uint8(magnitude));
 
 % Remove redundant pixels in an image. 
 angle(isnan(angle))=0;
@@ -58,7 +47,6 @@ feature=[]; %initialized the feature vector
 % Iterations for Blocks
 for i = 0: rows/8 - 2
     for j= 0: cols/8 -2
-        disp([i,j])
         
         mag_patch = magnitude(8*i+1 : 8*i+16 , 8*j+1 : 8*j+16);
         mag_patch = imfilter(mag_patch,gauss);
