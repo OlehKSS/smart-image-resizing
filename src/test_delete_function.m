@@ -1,12 +1,13 @@
+%clearing command line
+clc;
+%closing all plot windows etc.
+close all;
 
-%Function that deletes "seams" in image. Pass to the function the original 
-%image, the x values of all seams to be deleted, the y values of all seams
-%to be deleted, the number of horizontal seams, and the number of vertical
-%seams, respectively. Xarray and yarray vs should be in the format 
-% 1 x N, where N is the number of pixels. The output is the image with
-%the seams removed.
+import delete.delete_seams;
 
-function new_image = delete_seams(image, xarray, yarray, num_x_seams, num_y_seams)
+image = [1,2,3;4,5,6]
+xarray = [2,1];
+yarray = [2,1];
 
 %Number of total pixels to delete
 num_pixels = length(xarray);
@@ -24,6 +25,8 @@ for i = 1: num_pixels
     image(index) = 0;
 end
 
+image 
+
 %Flatten the original image into a 1D column vector
 image = image(:);
 
@@ -34,7 +37,7 @@ image = image(image ~= 0);
 image = image - 1.;
 
 %Reshape the image to new dimensions
-height = height - num_x_seams
-width = width - num_y_seams
-new_image = reshape(image,[height,width]);
-end
+height = height - 0;
+width = width - 1;
+new_image = reshape(image,height,width)
+%new_image = delete_seams(image,xarray,yarray,0,1)
