@@ -1,5 +1,5 @@
 %Define an energy function for the imported image
-%using the Sobel gradient operator
+%using the default Sobel gradient operator
 function f1 = e1_error(image)
     if size(image,3)==3
         image=rgb2gray(image);
