@@ -1,15 +1,15 @@
 
 %Function that deletes "seams" in image. Pass to the function the original 
-%image, the x values of all seams to be deleted, the y values of all seams
+%image, marray and narray, which are the coordinates of the pixels
 %to be deleted, the number of horizontal seams, and the number of vertical
-%seams, respectively. Xarray and yarray vs should be in the format 
-% 1 x N, where N is the number of pixels. The output is the image with
-%the seams removed.
+%seams, respectively. Marray and narray vs should be in the format 
+% 1 x N, where N is the number of pixels to be deleted. The output is the 
+%image with the seams removed.
 
-function new_image = delete_seams(image, xarray, yarray, num_x_seams, num_y_seams)
+function new_image = delete_seams(image, narray, marray, num_horiz_seams, num_vert_seams)
 
 %Number of total pixels to delete
-num_pixels = length(xarray);
+num_pixels = length(narray);
 
 %Size of the original image
 [height, width] = size(image);
@@ -20,21 +20,32 @@ image = image + 1.;
 
 %Find the indices of the points to delete and assign 0 to them.
 for i = 1: num_pixels
-    index = sub2ind(size(image), yarray(i), xarray(i));
-    image(index) = 0;
+    image(marray(i),narray(i)) = 0;
 end
 
 %Flatten the original image into a 1D column vector
-image = image(:);
+k = 1;
+for i = 1 : height
+    for j = 1 : width
+    flattened_image(k) = image(i,j);
+    k = k + 1;
+    end
+end
 
 %Delete all the elements equating to zero
-image = image(image ~= 0);
+flattened_image = flattened_image(flattened_image ~= 0);
 
 %Subtract one to obtain the original pixel values
-image = image - 1.;
+flattened_image = flattened_image - 1.;
 
-%Reshape the image to new dimensions
-height = height - num_x_seams
-width = width - num_y_seams
-new_image = reshape(image,[height,width]);
+%Reshape the image to the new dimensions
+height = height - num_horiz_seams;
+width = width - num_vert_seams;
+new_image = zeros(height,width);
+k = 1;
+for i = 1 : height
+    for j = 1 : width
+    new_image(i,j) = flattened_image(k);
+    k = k + 1;
+    end
 end
