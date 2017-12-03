@@ -6,13 +6,13 @@
 % 1 x N, where N is the number of pixels to be deleted. The output is the 
 %image with the seams removed.
 
-function new_image = delete_seams(image, narray, marray, num_horiz_seams, num_vert_seams)
+function new_image = delete_seams(image, narray, marray, num_horiz_seams)
 
 %Number of total pixels to delete
 num_pixels = length(narray);
 
 %Size of the original image
-[height, width] = size(image);
+[height, width, ~] = size(image);
 
 %Add one to each value in the image for the deletion condition, in case 
 %zeros already exist.
@@ -41,7 +41,6 @@ flattened_image = flattened_image - 1.;
 
 %Reshape the image to the new dimensions
 height = height - num_horiz_seams;
-width = width - num_vert_seams;
 new_image = zeros(height,width);
 k = 1;
 for i = 1 : height
