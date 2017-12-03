@@ -1,5 +1,6 @@
-%clearing command line
+%clearing command line and variables
 clc;
+clear variables;
 %closing all plot windows etc.
 close all;
 

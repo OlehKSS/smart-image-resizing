@@ -25,6 +25,7 @@ end
 
 %Flatten the original image into a 1D column vector
 k = 1;
+flattened_image = (1,height*width);
 for i = 1 : height
     for j = 1 : width
     flattened_image(k) = image(i,j);
