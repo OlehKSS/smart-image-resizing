@@ -1,9 +1,4 @@
-function detect = hog(im)
-
-    %hog = hog_feature_vector (im);
-    im =imread('football.jpg');
-   imshow(im);
-   %  imshow(im3);
+function out = hog(im)
 % Convert RGB iamge to grayscale
 if size(im,3)==3
  im=rgb2gray(im);
@@ -37,10 +32,5 @@ magnitude=sqrt(Ix.^2 + Iy.^2);
 hogy = magnitude/maxGrayLevel;
 %hogy = magnitude/max(histogram(magnitude,'pdf',NM);
 %[featurevec,hogvisualization]=extractHOGFeatures(magnitude);
-
- %figure,imshow(uint8(angle));
- figure,imshow(uint8(hogy));
- %hold on;
- %plot(hogvisualization);
-
+out = hogy;
 end

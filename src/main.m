@@ -21,7 +21,7 @@ energy_e1 = e1_error(img);
 %but something clearly incorrect in the function itself
 energy_h = hog(img);
 
-img_small = shrink(img, energy_e1, 59, 129);
+img_small = shrink(img, @e1_error, 30, 60);
 imshow(img_small);
 
 %creation of seams map
