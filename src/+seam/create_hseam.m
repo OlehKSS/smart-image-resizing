@@ -1,5 +1,7 @@
-function out = create_hseam(img, energy_map, start_row)
-    [img_rows, img_cols, colors] = size(img);
+function [out, seams_map] = create_hseam(img, energy_map, seams_map, start_row)
+    %creates horizontal seam, seams overlaping will be excluded by usage of
+    %seams_map variable
+    [img_rows, img_cols, ~] = size(img);
     
     %creating starting seam node
     sm1 = seam.SeamNode(start_row,  1, energy_map(start_row, 1));
@@ -10,28 +12,57 @@ function out = create_hseam(img, energy_map, start_row)
     %and creating all possible 8-paths
     for i = 2:img_cols
         parent = nodes{i - 1};
-        temp_children = [];
-        temp_row_start = parent.Row - 1;
-        temp_row_end = parent.Row + 1;
-
-        %checking image boundaries and correcting values
-        if (temp_row_start < 1)
-            temp_row_start = 1;
-        end
-        if (temp_row_end > img_rows)
-            temp_row_end = img_rows;
-        end
-
-        %here we take every descendent node, it might be quicker to
-        %take just one with minimum of energy
-        for j = temp_row_start : temp_row_end
-            temp_children = [temp_children, seam.SeamNode(j, i, energy_map(j, i), parent)];
-        end
+        pixel_selected = false;
+        %how many rows from left or from right to check
+        number_of_neighbors_to_check = 1;
         
-        energy_of_ch = arrayfun(@(x) x.SeamEnergy, temp_children);
-        [min_e_ch, index_ch] = min(energy_of_ch);
-        
-        nodes{i} = temp_children(index_ch);
+        while (~pixel_selected)
+            temp_children = [];
+            temp_row_start = parent.Row - number_of_neighbors_to_check;
+            temp_row_end = parent.Row + number_of_neighbors_to_check;
+            
+            %checking image boundaries and correcting values
+            if (temp_row_start < 1)
+                temp_row_start = 1;
+            end
+            if (temp_row_end > img_rows)
+                temp_row_end = img_rows;
+            end
+            
+            temp_children_rows = [temp_row_start, parent.Row, temp_row_end];
+            
+            %here we take every descendent node, it is quicker to
+            %take just one with minimum of energy
+            for j = 1:length(temp_children_rows)
+                temp_row = temp_children_rows(j);
+                temp_children = [temp_children, seam.SeamNode(temp_row, i, energy_map(temp_row, i), parent)];
+            end
+            
+            energy_of_ch = arrayfun(@(x) x.SeamEnergy, temp_children);
+            [~, indices_ch] = sort(energy_of_ch, 'ascend');
+            
+            %checking for pixel overlapping, add pixels that are not shared by
+            %other seams
+            for j = 1:length(indices_ch)
+                index_ch = indices_ch(j);
+                ch_coords = temp_children(index_ch).get_coords();
+                ch_row = ch_coords(1);
+                ch_col = ch_coords(2);
+
+                if (seams_map(ch_row, ch_col) ~= 1)
+                    nodes{i} = temp_children(index_ch);
+                    seams_map(ch_row, ch_col) = 1;
+                    pixel_selected = true;
+                    break;
+                end
+            end
+            
+            number_of_neighbors_to_check = number_of_neighbors_to_check + 1;
+            
+            if (number_of_neighbors_to_check > img_rows)
+                disp(strcat('Out of range for neighbors check:', num2str(number_of_neighbors_to_check)));
+            end
+        end
     end
     
     %now we will reverse the path
