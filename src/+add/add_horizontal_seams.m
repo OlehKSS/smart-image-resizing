@@ -4,8 +4,11 @@
 %narray vs should be in the format 1 x N, where N is the number of pixels
 %to be deleted. The output is the image with the seams added.
 
-function new_image = add_horizontal_seams(image, narray, marray, num_horiz_seams)
-
+function new_image = add_horizontal_seams(original_image, narray, marray, num_horiz_seams)
+    
+    %Convert image to double to operate on
+    image = double(original_image);
+    
     %Number of total pixels to add 
     num_pixels = length(narray);
 
@@ -43,27 +46,25 @@ function new_image = add_horizontal_seams(image, narray, marray, num_horiz_seams
         indicies_changing = indicies_changing + 1;
         for i = 2 : num_pixels
             expanded_flattened_image(indicies_changing(i-1)+1:indicies_changing(i),1,z) = flattened_image(indicies(i-1)+1:indicies(i),1,z);
-            %Condition in case the seam goes through the last pixel on the
-            %bottom of an image
-            if indicies(i) == height*width
+            %Condition in case the seam passes through the last row of the
+            %image
+            if rem(indicies(i),(height-num_horiz_seams)) == 0
                 expanded_flattened_image(indicies_changing(i)+1,1,z) = flattened_image(indicies(i),1,z);
-            else    
+            else
                 expanded_flattened_image(indicies_changing(i)+1,1,z) = (flattened_image(indicies(i),1,z) + flattened_image(indicies(i)+1,1,z))/2;
-                indicies_changing = indicies_changing + 1;
             end
+            indicies_changing = indicies_changing + 1;
         end
         %Get the values for the rest of the image(after the last pixel has been
         %inserted)
-        expanded_flattened_image(indicies_changing(i-1)+2:length(expanded_flattened_image),1,z) = flattened_image(indicies(i-1)+2:length(flattened_image),1,z);
+        expanded_flattened_image(indicies_changing(i)+1:length(expanded_flattened_image),1,z) = flattened_image(indicies(i)+1:length(flattened_image),1,z);
     end
-    
-    expanded_flattened_image = expanded_flattened_image(:);
     
     %Reshape the image to the new dimensions
     new_image = reshape(expanded_flattened_image,[height,width,depth]);
     
-    %Convert new_image to uint8 if it was originally
-    if isfloat(image) == 0
+    %Convert new_image to uint8 if it was initially
+    if isfloat(original_image) == 0
         new_image = uint8(new_image);
     end
     
