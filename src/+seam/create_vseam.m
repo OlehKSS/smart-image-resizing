@@ -7,6 +7,7 @@ function [out, seams_map] = create_vseam(img, energy_map, seams_map, start_col)
     sm1 = seam.SeamNode(1, start_col, energy_map(1, start_col));
     nodes = {img_rows};
     nodes{1} = sm1;
+    connectivityCoeff = 1;
     
     %traversing every row starting from second one
     %and creating all possible 8-paths
@@ -21,6 +22,9 @@ function [out, seams_map] = create_vseam(img, energy_map, seams_map, start_col)
             temp_children = [];
             temp_col_start = parent.Column - number_of_neighbors_to_check;
             temp_col_end = parent.Column + number_of_neighbors_to_check;
+            
+            %saving number of members to check
+            connectivityCoeff = max(number_of_neighbors_to_check, connectivityCoeff);
 
             %checking image boundaries and correcting values
             if (temp_col_start < 1)
@@ -77,4 +81,9 @@ function [out, seams_map] = create_vseam(img, energy_map, seams_map, start_col)
     
     %disp(strcat('done for column ', num2str(start_col)));
     out = seam.Seam(seam_path);
+    
+    if (connectivityCoeff ~= 1)
+        out.is8Connected = false;
+        out.connectivityCoeff = connectivityCoeff;
+    end
 end
