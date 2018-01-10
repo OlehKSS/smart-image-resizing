@@ -1,7 +1,9 @@
 classdef Seam < handle
     properties
         Nodes
-        Energy
+        Energy = 0
+        is8Connected = true
+        connectivityCoeff = 1
     end
     methods
         function sm = Seam(nodes)
